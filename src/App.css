@@ -1,0 +1,12 @@
+#root {
+  height: 100vh;
+  width: 100vw;
+}
+
+.app-shell {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  background: #edf2f7;
+  color: #0f172a;
+}

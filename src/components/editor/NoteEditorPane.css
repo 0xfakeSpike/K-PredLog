@@ -1,0 +1,173 @@
+.editor-pane {
+  flex: 1;
+  padding: 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: auto;
+  background: #fff;
+}
+
+.editor-pane--empty {
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state {
+  text-align: center;
+  color: #94a3b8;
+}
+
+.editor-pane__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.editor-pane__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.editor-pane__save {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 120px;
+}
+
+.editor-pane__save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.editor-pane__title {
+  font-size: 28px;
+  font-weight: 600;
+  border: none;
+  padding: 0;
+  margin-bottom: 12px;
+  width: 100%;
+  outline: none;
+}
+
+.editor-pane__meta {
+  color: #94a3b8;
+  margin: 0;
+  font-size: 14px;
+}
+
+.editor-pane__delete {
+  border: none;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 96px;
+}
+
+.editor-pane__delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.editor-pane__body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.editor-pane__meta-card {
+  border: 1px dashed rgba(15, 23, 42, 0.2);
+  border-radius: 16px;
+  padding: 16px 20px;
+  background: #f9fafb;
+}
+
+.editor-pane__meta-card h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #475569;
+}
+
+.editor-pane__meta-card p {
+  margin: 0;
+  color: #0f172a;
+}
+
+.editor-pane__meta-card .editor-pane__meta-source {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 8px;
+}
+
+.editor-pane__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f4cd7;
+  background: rgba(31, 76, 215, 0.1);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-top: 8px;
+}
+
+.editor-pane__meta-label {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.editor-pane__judgement {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editor-pane__judgement-values {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.editor-pane__control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.editor-pane__control select,
+.editor-pane__control input[type="date"] {
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  padding: 6px 10px;
+  font-size: 14px;
+  min-width: 140px;
+}
+
+.editor-pane__date {
+  margin-top: 12px;
+}
+
+.editor-pane__judgement-preview {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.editor-pane__judgement-preview strong {
+  font-weight: 600;
+}
+

@@ -1,0 +1,168 @@
+:root {
+  --sidebar-width: 320px;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  border-right: 1px solid rgba(9, 30, 66, 0.08);
+  background: #f7f8fa;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 20px;
+  gap: 16px;
+}
+
+.sidebar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sidebar__logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  object-fit: contain;
+  display: block;
+}
+
+.sidebar__title {
+  font-weight: 600;
+  margin: 0;
+  color: #111;
+}
+
+.sidebar__subtitle {
+  margin: 0;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.sidebar__new {
+  border: none;
+  background: #111827;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.sidebar__folder {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.sidebar__folder-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sidebar__folder-btn {
+  flex: 1;
+  border: none;
+  background: #1f4cd7;
+  color: white;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sidebar__folder-btn:hover:not(:disabled) {
+  background: #1e40af;
+}
+
+.sidebar__folder-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sidebar__folder-btn--secondary {
+  background: #10b981;
+}
+
+.sidebar__folder-btn--secondary:hover:not(:disabled) {
+  background: #059669;
+}
+
+.sidebar__folder-name {
+  margin: 0;
+  font-size: 12px;
+  color: #475569;
+}
+
+.sidebar__folder-error {
+  margin: 0;
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.sidebar__search input {
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  padding: 8px 12px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.sidebar__list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.sidebar__section + .sidebar__section {
+  margin-top: 16px;
+}
+
+.sidebar__section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin: 0 0 8px;
+}
+
+.sidebar__note-snippet {
+  font-size: 13px;
+  color: #64748b;
+  display: block;
+  margin-top: 4px;
+}
+
+.sidebar__note-time {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 4px;
+  display: block;
+}
+
+.sidebar__note-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.sidebar__note-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #1f4cd7;
+  background: rgba(31, 76, 215, 0.12);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
