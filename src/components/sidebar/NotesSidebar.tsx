@@ -30,8 +30,12 @@ export function NotesSidebar() {
             <p className="sidebar__subtitle">行情笔记</p>
           </div>
         </div>
-        <button className="sidebar__new" onClick={createNote}>
-          + 新建笔记
+        <button
+          className="sidebar__new"
+          onClick={createNotebook}
+          disabled={isLoading}
+        >
+          {isLoading ? '创建中…' : '+ 新建笔记本'}
         </button>
       </div>
 
@@ -46,10 +50,10 @@ export function NotesSidebar() {
           </button>
           <button
             className="sidebar__folder-btn sidebar__folder-btn--secondary"
-            onClick={createNotebook}
+            onClick={createNote}
             disabled={isLoading}
           >
-            {isLoading ? '创建中…' : '+ 新建笔记本'}
+            + 新建笔记
           </button>
         </div>
         {sourceFolderName && (
