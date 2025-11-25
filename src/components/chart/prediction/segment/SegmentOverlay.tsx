@@ -18,19 +18,8 @@ export function SegmentOverlay({ chart, predictionSegments }: Props) {
   const predictionSeriesRef = useRef<ISeriesApi<'Line'>[]>([])
   const isDisposedRef = useRef(false)
 
-  // 更新预测线
   useEffect(() => {
-    console.log('SegmentOverlay useEffect:', { 
-      hasChart: !!chart, 
-      segmentsCount: predictionSegments.length,
-      endTimes: predictionSegments.map(s => ({
-        endTime: s.endTime,
-        endTimeDate: new Date(s.endTime * 1000).toLocaleString('zh-CN')
-      }))
-    })
-    
     if (!chart) {
-      console.log('SegmentOverlay: chart is null, returning')
       return
     }
 
@@ -77,8 +66,6 @@ export function SegmentOverlay({ chart, predictionSegments }: Props) {
         throw error
       }
 
-      // 如果是震荡行情，使用波浪线；否则使用曲线拟合
-      console.log('segment endTime:', segment.endTime, 'date:', new Date(segment.endTime * 1000).toLocaleString('zh-CN'))
       const curvePoints = segment.isRange
         ? generateRangeWavePoints(
             segment.startTime,

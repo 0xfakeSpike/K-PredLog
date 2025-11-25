@@ -36,23 +36,12 @@ const DEFAULT_CONFIG: NoteConfig = {
 export async function loadNoteConfig(
   directoryHandle: FileSystemDirectoryHandle,
 ): Promise<NoteConfig> {
-  console.log('[loadNoteConfig] Starting to load config from directory:', directoryHandle.name)
-  
   try {
-    console.log('[loadNoteConfig] Getting file handle for:', CONFIG_FILE_NAME)
     const fileHandle = await directoryHandle.getFileHandle(CONFIG_FILE_NAME)
-    
-    console.log('[loadNoteConfig] Getting file object')
     const file = await fileHandle.getFile()
-    
-    console.log('[loadNoteConfig] Reading file text, size:', file.size)
     const text = await file.text()
-    console.log('[loadNoteConfig] File content:', text)
-    
     try {
       const parsed = JSON.parse(text) as NoteConfig
-      console.log('[loadNoteConfig] Parsed config:', parsed)
-      
       // 验证配置格式
       if (typeof parsed.source !== 'string') {
         throw new Error(`Invalid config: 'source' must be a string, got ${typeof parsed.source}`)
@@ -61,7 +50,6 @@ export async function loadNoteConfig(
         throw new Error(`Invalid config: 'symbol' must be a string, got ${typeof parsed.symbol}`)
       }
       
-      console.log('[loadNoteConfig] Config loaded successfully:', parsed)
       return parsed
     } catch (parseError) {
       console.error('[loadNoteConfig] JSON parse error:', parseError)
@@ -71,7 +59,6 @@ export async function loadNoteConfig(
   } catch (error: any) {
     // 文件不存在，返回默认配置
     if (error.name === 'NotFoundError') {
-      console.log('[loadNoteConfig] File not found, using default config')
       return DEFAULT_CONFIG
     }
     // 其他错误，详细记录并抛出

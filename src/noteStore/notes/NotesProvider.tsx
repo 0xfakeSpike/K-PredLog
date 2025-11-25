@@ -113,7 +113,6 @@ export function NotesProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo(() => {
     const directoryHandle = listManager.getDirectoryHandle()
-    console.log('[NotesProvider] useMemo - directoryHandle:', directoryHandle?.name || 'null')
     return {
       notes: listManager.notes,
       activeNoteName: listManager.activeNoteName,

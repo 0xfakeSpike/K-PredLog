@@ -25,18 +25,12 @@ export interface UseNoteConfigManagerReturn {
 
 export function useNoteConfigManager(): UseNoteConfigManagerReturn {
   const [noteConfig, setNoteConfig] = useState<NoteConfig | null>(null)
-  
-  // 添加日志来追踪状态变化
-  console.log('[useNoteConfigManager] Current noteConfig state:', noteConfig)
 
   const loadConfig = useCallback(
     async (directoryHandle: FileSystemDirectoryHandle) => {
-      console.log('[useNoteConfigManager] loadConfig called with directory:', directoryHandle.name)
       try {
         const config = await loadNoteConfig(directoryHandle)
-        console.log('[useNoteConfigManager] Config loaded, setting state:', config)
         setNoteConfig(config)
-        console.log('[useNoteConfigManager] State updated')
       } catch (error) {
         console.error('[useNoteConfigManager] Failed to load note config:', {
           error,
@@ -54,8 +48,6 @@ export function useNoteConfigManager(): UseNoteConfigManagerReturn {
   )
 
   const resetConfig = useCallback(() => {
-    console.log('[useNoteConfigManager] resetConfig called, setting noteConfig to null')
-    console.trace('[useNoteConfigManager] resetConfig call stack')
     setNoteConfig(null)
   }, [])
 

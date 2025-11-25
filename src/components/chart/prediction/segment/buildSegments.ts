@@ -16,19 +16,7 @@ export function buildPredictionSegments(
   markers: NoteMarker[],
   candles: CandlestickData<any>[],
 ): PredictionSegment[] {
-  console.log('buildPredictionSegments input:', {
-    markersCount: markers.length,
-    candlesCount: candles.length,
-    markers: markers.map(m => ({
-      time: m.time,
-      timeDate: new Date(m.time * 1000).toLocaleString('zh-CN'),
-      intervalLabel: m.intervalLabel,
-      directionLabel: m.directionLabel
-    }))
-  })
-  
   if (!candles.length) {
-    console.log('buildPredictionSegments: no candles')
     return []
   }
   
@@ -49,34 +37,18 @@ export function buildPredictionSegments(
 
   // 如果没有有效的 K 线数据点，返回空数组
   if (candlePoints.length === 0) {
-    console.log('buildPredictionSegments: no valid candle points')
     return []
   }
 
   // 获取 K 线数据的时间范围
   const firstCandleTime = candlePoints[0].time
   const lastCandleTime = candlePoints[candlePoints.length - 1].time
-  
-  console.log('buildPredictionSegments candle range:', {
-    firstCandleTime,
-    firstCandleDate: new Date(firstCandleTime * 1000).toLocaleString('zh-CN'),
-    lastCandleTime,
-    lastCandleDate: new Date(lastCandleTime * 1000).toLocaleString('zh-CN')
-  })
 
   const result = markers
     .map((marker) => {
-      console.log('Processing marker:', {
-        time: marker.time,
-        timeDate: new Date(marker.time * 1000).toLocaleString('zh-CN'),
-        intervalLabel: marker.intervalLabel,
-        directionLabel: marker.directionLabel
-      })
-      
       // 检查标记时间是否在 K 线数据范围内
       // 如果标记时间太早，直接跳过
       if (marker.time < firstCandleTime) {
-        console.log('  -> marker time too early, skipping')
         return null
       }
       // 如果标记时间在最后一天之后，仍然允许（可能是预测未来），使用最后一个K线作为起点
@@ -85,26 +57,17 @@ export function buildPredictionSegments(
       const intervalDays = Number(marker.intervalLabel)
       const intervalSeconds = intervalDays * 24 * 60 * 60
       if (!intervalSeconds || Number.isNaN(intervalSeconds)) {
-        console.log('  -> invalid intervalSeconds:', { intervalDays, intervalSeconds })
         return null
       }
-      
-      console.log('  -> interval:', { intervalDays, intervalSeconds })
+
       const direction = normalizeDirection(marker.directionLabel)
 
       // 找到最接近标记时间的K线（而不是第一个大于等于的）
       const startPoint = findClosestCandleIndex(candlePoints, marker.time)
       if (!startPoint) {
-        console.log('  -> startPoint is null, no closest candle found')
         return null
       }
-      
-      console.log('  -> startPoint:', {
-        time: startPoint.time,
-        timeDate: new Date(startPoint.time * 1000).toLocaleString('zh-CN'),
-        value: startPoint.value
-      })
-      
+
       // 验证起点价格是否有效
       if (
         typeof startPoint.value !== 'number' ||
@@ -116,11 +79,7 @@ export function buildPredictionSegments(
       }
 
       const targetTime = marker.time + intervalSeconds
-      console.log('  -> targetTime:', {
-        targetTime,
-        targetTimeDate: new Date(targetTime * 1000).toLocaleString('zh-CN')
-      })
-      
+
       // 如果目标时间也在 K 线数据范围内，才生成预测线
       // 注意：对于超出范围的情况，我们仍然允许生成（因为可能是预测未来）
       // 但起点必须在范围内
@@ -131,16 +90,8 @@ export function buildPredictionSegments(
       )
       
       if (!targetPoint) {
-        console.log('  -> targetPoint is null, cannot build segment')
         return null
       }
-      
-      console.log('  -> targetPoint:', {
-        time: targetPoint.time,
-        timeDate: new Date(targetPoint.time * 1000).toLocaleString('zh-CN'),
-        value: targetPoint.value,
-        isFuture: targetPoint.time > candlePoints[candlePoints.length - 1].time
-      })
 
       // 计算中间点（起点和终点之间的中点）
       let midTime: number | undefined
@@ -149,12 +100,10 @@ export function buildPredictionSegments(
       let endPrice: number
 
       // 检查是否是未来预测（targetPoint 的时间是否超过最后一个K线时间）
-      const lastCandleTime = candlePoints[candlePoints.length - 1].time
       const isFuturePrediction = targetPoint.time > lastCandleTime
 
       if (isFuturePrediction) {
         // 目标时间超过了最新K线，使用 findClosestCandleIndex 返回的未来预测点
-        console.log('  -> Using future prediction point from findClosestCandleIndex')
         endTime = targetPoint.time
         endPrice = targetPoint.value
         
@@ -167,18 +116,10 @@ export function buildPredictionSegments(
           midTime = startPoint.time + (endTime - startPoint.time) / 2
           midPrice = startPoint.value + (endPrice - startPoint.value) / 2
         }
-        
-        console.log('  -> Future segment calculated:', {
-          endTime,
-          endTimeDate: new Date(endTime * 1000).toLocaleString('zh-CN'),
-          endPrice,
-          direction
-        })
       } else {
         // 有终点，使用三个点拟合
         // 如果起点和终点是同一个K线，说明预测周期太短（在同一天内），跳过
         if (startPoint.time === targetPoint.time) {
-          console.log('  -> startPoint.time === targetPoint.time, prediction period too short, skipping')
           return null
         }
         
@@ -293,22 +234,9 @@ export function buildPredictionSegments(
         isRange: direction === 'range', // 标记是否为震荡行情
       } as PredictionSegment
       
-      console.log('  -> Final segment:', {
-        endTime: segment.endTime,
-        endTimeDate: new Date(segment.endTime * 1000).toLocaleString('zh-CN')
-      })
-      
       return segment
     })
     .filter((segment): segment is PredictionSegment => segment !== null)
-  
-  console.log('buildPredictionSegments result:', {
-    segmentsCount: result.length,
-    endTimes: result.map(s => ({
-      endTime: s.endTime,
-      endTimeDate: new Date(s.endTime * 1000).toLocaleString('zh-CN')
-    }))
-  })
   
   return result
 }

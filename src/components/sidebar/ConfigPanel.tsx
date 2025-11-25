@@ -12,9 +12,6 @@ export function ConfigPanel() {
   const { noteConfig, directoryHandle, updateNoteConfig } = useNoteConfigContext()
   const [isSaving, setIsSaving] = useState(false)
   
-  // 添加日志来追踪接收到的 noteConfig
-  console.log('[ConfigPanel] Render - noteConfig:', noteConfig, 'directoryHandle:', directoryHandle?.name || 'null')
-  
   // 获取数据源选项（确保数据源已加载）
   const sourceOptions = useMemo(() => getSourceOptions(), [])
 

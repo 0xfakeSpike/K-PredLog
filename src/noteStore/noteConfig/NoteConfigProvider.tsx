@@ -13,14 +13,9 @@ export function NoteConfigProvider({ children }: { children: ReactNode }) {
   const { directoryHandle } = useNotesContext()
   const { noteConfig, loadConfig, resetConfig, updateNoteConfig } = useNoteConfigManager()
 
-  // 添加日志来追踪 noteConfig 的变化
-  console.log('[NoteConfigProvider] Render - noteConfig:', noteConfig, 'directoryHandle:', directoryHandle?.name || 'null')
-
   // 当 directoryHandle 变化时，自动加载配置
   useEffect(() => {
-    console.log('[NoteConfigProvider] useEffect triggered, directoryHandle:', directoryHandle?.name || 'null')
     if (directoryHandle) {
-      console.log('[NoteConfigProvider] Calling loadConfig...')
       loadConfig(directoryHandle).catch((error) => {
         console.error('[NoteConfigProvider] Failed to load note config:', {
           error,
@@ -32,8 +27,6 @@ export function NoteConfigProvider({ children }: { children: ReactNode }) {
         // 不捕获错误，让错误暴露出来
       })
     } else {
-      console.log('[NoteConfigProvider] directoryHandle is null, resetting config')
-      console.trace('[NoteConfigProvider] resetConfig call stack')
       // 当 directoryHandle 为 null 时，重置配置
       resetConfig()
     }
