@@ -22,8 +22,6 @@ export function generateCurvePoints(
   startPrice: number,
   endTime: number,
   endPrice: number,
-  midTime?: number,
-  midPrice?: number,
 ): Array<{ time: number; price: number }> {
   if (startTime >= endTime) {
     return [{ time: startTime, price: startPrice }]
@@ -38,52 +36,24 @@ export function generateCurvePoints(
   let b: number
   const c = y1
 
-  if (midTime !== undefined && midPrice !== undefined) {
-    // 三个点拟合：起点 (0, y1)、中点 (x_mid_norm, yMid)、终点 (1, y2)
-    // 归一化中间点的时间
-    const xMidNorm = (midTime - startTime) / (endTime - startTime)
-    const yMid = midPrice
+  // 两个点拟合：使用起点和终点，通过引入弯曲系数来形成凹函数
+  const curveFactor = 1.5 // 弯曲系数，值越大曲线越弯曲
 
-    // 通过三个点求解二次函数：y = ax² + bx + c
-    // y1 = a * 0² + b * 0 + c  =>  c = y1
-    // yMid = a * xMidNorm² + b * xMidNorm + y1
-    // y2 = a * 1² + b * 1 + y1
-    // 
-    // 从第二个方程：yMid - y1 = a * xMidNorm² + b * xMidNorm
-    // 从第三个方程：y2 - y1 = a + b  =>  b = y2 - y1 - a
-    // 代入：yMid - y1 = a * xMidNorm² + (y2 - y1 - a) * xMidNorm
-    // yMid - y1 = a * xMidNorm² + (y2 - y1) * xMidNorm - a * xMidNorm
-    // yMid - y1 - (y2 - y1) * xMidNorm = a * (xMidNorm² - xMidNorm)
-    // a = (yMid - y1 - (y2 - y1) * xMidNorm) / (xMidNorm² - xMidNorm)
-    const denominator = xMidNorm * xMidNorm - xMidNorm
-    if (Math.abs(denominator) < 0.001) {
-      // 分母接近0，退化为直线
-      a = 0
-      b = y2 - y1
-    } else {
-      a = (yMid - y1 - (y2 - y1) * xMidNorm) / denominator
-      b = (y2 - y1) - a
-    }
-  } else {
-    // 两个点拟合：使用起点和终点，通过引入弯曲系数来形成凹函数
-    const curveFactor = 1.5 // 弯曲系数，值越大曲线越弯曲
+  // 在归一化空间求解二次函数参数：y = ax² + bx + c
+  // 为了形成凹函数（斜率越来越大），我们让曲线在中间点有更大的偏移
+  // 直线上的中间点：y_mid_linear = y1 + (y2 - y1) * 0.5
+  // 凹函数（斜率越来越大）：
+  //   - 如果价格上涨（y2 > y1），曲线应该先慢后快，中间点应该低于直线（yMid < yMidLinear）
+  //   - 如果价格下跌（y2 < y1），曲线应该先快后慢，中间点应该高于直线（yMid > yMidLinear）
+  // 所以 offset 的符号应该与 (y2 - y1) 相反
+  const yMidLinear = y1 + (y2 - y1) * 0.5
+  const offset = -(y2 - y1) * curveFactor * 0.25 // 负号使曲线变成凹函数
+  const yMid = yMidLinear + offset
 
-    // 在归一化空间求解二次函数参数：y = ax² + bx + c
-    // 为了形成凹函数（斜率越来越大），我们让曲线在中间点有更大的偏移
-    // 直线上的中间点：y_mid_linear = y1 + (y2 - y1) * 0.5
-    // 凹函数（斜率越来越大）：
-    //   - 如果价格上涨（y2 > y1），曲线应该先慢后快，中间点应该低于直线（yMid < yMidLinear）
-    //   - 如果价格下跌（y2 < y1），曲线应该先快后慢，中间点应该高于直线（yMid > yMidLinear）
-    // 所以 offset 的符号应该与 (y2 - y1) 相反
-    const yMidLinear = y1 + (y2 - y1) * 0.5
-    const offset = -(y2 - y1) * curveFactor * 0.25 // 负号使曲线变成凹函数
-    const yMid = yMidLinear + offset
-
-    // 通过三个点求解：起点 (0, y1)、中点 (0.5, yMid)、终点 (1, y2)
-    // a = -4 * (yMid - 0.5(y1 + y2))
-    a = -4 * (yMid - 0.5 * (y1 + y2))
-    b = (y2 - y1) - a
-  }
+  // 通过三个点求解：起点 (0, y1)、中点 (0.5, yMid)、终点 (1, y2)
+  // a = -4 * (yMid - 0.5(y1 + y2))
+  a = -4 * (yMid - 0.5 * (y1 + y2))
+  b = (y2 - y1) - a
 
   // 根据时间跨度动态生成点数，确保曲线平滑
   const timeSpanSeconds = endTime - startTime
