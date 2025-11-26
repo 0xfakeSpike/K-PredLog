@@ -11,6 +11,7 @@ import { generateHTML } from '@tiptap/html'
 import StarterKit from '@tiptap/starter-kit'
 import TurndownService from 'turndown'
 import type { Note } from './types'
+import type { DirectoryHandle } from '../directoryAccessor/types'
 
 const turndown = new TurndownService({
   headingStyle: 'atx',
@@ -26,7 +27,7 @@ const turndown = new TurndownService({
  */
 export async function writeNote(
   note: Note,
-  directoryHandle: FileSystemDirectoryHandle,
+  directoryHandle: DirectoryHandle,
 ): Promise<void> {
   // 写入 JSON 文件（结构化信息）
   await writeNoteJson(note, directoryHandle)
@@ -40,7 +41,7 @@ export async function writeNote(
  */
 async function writeNoteJson(
   note: Note,
-  directoryHandle: FileSystemDirectoryHandle,
+  directoryHandle: DirectoryHandle,
 ): Promise<void> {
   const filename = `${note.name}.json`
   const fileHandle = await directoryHandle.getFileHandle(filename, { create: true })
@@ -57,8 +58,9 @@ async function writeNoteJson(
   }
   
   const jsonString = JSON.stringify(jsonData, null, 2)
-  await writable.write(jsonString)
-  await writable.close()
+  const writer = writable.getWriter()
+  await writer.write(new TextEncoder().encode(jsonString))
+  await writer.close()
 }
 
 /**
@@ -66,15 +68,16 @@ async function writeNoteJson(
  */
 async function writeNoteMarkdown(
   note: Note,
-  directoryHandle: FileSystemDirectoryHandle,
+  directoryHandle: DirectoryHandle,
 ): Promise<void> {
   const filename = `${note.name}.md`
   const fileHandle = await directoryHandle.getFileHandle(filename, { create: true })
   const writable = await fileHandle.createWritable()
   
   const markdown = serializeNoteToMarkdown(note)
-  await writable.write(markdown)
-  await writable.close()
+  const writer = writable.getWriter()
+  await writer.write(new TextEncoder().encode(markdown))
+  await writer.close()
 }
 
 /**

@@ -25,6 +25,10 @@ export function RichTextEditor({ note, onContentChange }: Props) {
     extensions: [
       StarterKit.configure({
         heading: false,
+        bulletList: false, // 禁用 StarterKit 中的 bulletList，使用自定义配置
+        orderedList: false, // 禁用 StarterKit 中的 orderedList，使用自定义配置
+        blockquote: false, // 禁用 StarterKit 中的 blockquote，使用自定义配置
+        horizontalRule: false, // 禁用 StarterKit 中的 horizontalRule，使用自定义配置
       }),
       Heading.configure({ levels: [1, 2, 3] }),
       BulletList,

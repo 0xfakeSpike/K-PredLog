@@ -109,6 +109,33 @@
   color: #ef4444;
 }
 
+.sidebar__kline-data {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.sidebar__notebook-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.sidebar__notebook-row .sidebar__folder-name {
+  flex: 1;
+  margin: 0;
+}
+
+.sidebar__notebook-row .sidebar__folder-btn {
+  flex: 0 0 auto;
+  min-width: 100px;
+}
+
 .sidebar__search input {
   width: 100%;
   border-radius: 8px;

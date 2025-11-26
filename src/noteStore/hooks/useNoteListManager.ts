@@ -11,6 +11,7 @@ import { getTodayName, isValidDateString } from '../note/dateUtils'
 import { extractAllTextFromContent } from '../note/contentUtils'
 import { DEFAULT_CONTENT } from '../note/noteDefaults'
 import { setKlineDataDirectory } from '../../klineData/storage'
+import type { DirectoryAccessor, DirectoryHandle } from '../directoryAccessor/types'
 
 export interface UseNoteListManagerReturn {
   // 状态
@@ -33,8 +34,9 @@ export interface UseNoteListManagerReturn {
   renameNote: (oldName: NoteName, newName: NoteName) => Promise<void>
   
   // 内部方法（供其他hooks使用）
-  getDirectoryHandle: () => FileSystemDirectoryHandle | null
-  loadNotesFromDirectoryHandle: (handle: FileSystemDirectoryHandle) => Promise<void>
+  getDirectoryAccessor: () => DirectoryAccessor | null
+  getDirectoryHandle: () => DirectoryHandle | null
+  loadNotesFromDirectoryAccessor: (accessor: DirectoryAccessor) => Promise<void>
 }
 
 /**
@@ -82,7 +84,8 @@ export function useNoteListManager(): UseNoteListManagerReturn {
   const [isLoading, setIsLoading] = useState(false)
   const [sourceFolderName, setSourceFolderName] = useState<string | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
-  const directoryHandleRef = useRef<FileSystemDirectoryHandle | null>(null)
+  const directoryAccessorRef = useRef<DirectoryAccessor | null>(null)
+  const directoryHandleRef = useRef<DirectoryHandle | null>(null)
 
   const filteredNotes = useMemo(
     () => filterNotes(notes, searchTerm),
@@ -107,48 +110,56 @@ export function useNoteListManager(): UseNoteListManagerReturn {
     [],
   )
 
+  const getDirectoryAccessor = useCallback(() => {
+    return directoryAccessorRef.current
+  }, [])
+
   const getDirectoryHandle = useCallback(() => {
     return directoryHandleRef.current
   }, [])
 
-  const loadNotesFromDirectoryHandle = useCallback(
-    async (handle: FileSystemDirectoryHandle) => {
-      directoryHandleRef.current = handle
-      setSourceFolderName(handle.name)
+  const loadNotesFromDirectoryAccessor = useCallback(
+    async (accessor: DirectoryAccessor) => {
+      directoryAccessorRef.current = accessor
+      setSourceFolderName(accessor.name)
+      setIsLoading(true)
 
-      // 设置 K 线数据存储目录（使用笔记文件夹下的 .kline-data 子文件夹）
       try {
-        const klineDataDir = await handle.getDirectoryHandle('.kline-data', {
-          create: true,
-        })
-        setKlineDataDirectory(klineDataDir)
-      } catch (error) {
-        console.warn('Failed to create kline data directory:', error)
-      }
+        const handle = await accessor.getDirectoryHandle()
+        directoryHandleRef.current = handle
 
-      let rawFileNotes: Note[]
-      try {
-        rawFileNotes = await loadNotesFromDirectory(handle)
-      } catch (error) {
-        // 如果加载过程中出现错误（如无效日期），尝试逐个加载并修复
-        console.warn('Failed to load some notes, attempting to fix:', error)
-        rawFileNotes = []
-        for await (const [name, entry] of handle.entries()) {
-          if (entry.kind !== 'file' || !name.endsWith('.md')) continue
-          try {
-            const fileHandle = entry as FileSystemFileHandle
-            const file = await fileHandle.getFile()
-            const text = await file.text()
-            const note = parseMarkdownFile(`${handle.name}/${name}`, text)
-            rawFileNotes.push(note)
-          } catch (noteError) {
-            console.warn(`Failed to load note ${name}, skipping:`, noteError)
+        let rawFileNotes: Note[]
+        try {
+          rawFileNotes = await loadNotesFromDirectory(handle)
+        } catch (error) {
+          // 如果加载过程中出现错误（如无效日期），尝试逐个加载并修复
+          console.warn('Failed to load some notes, attempting to fix:', error)
+          rawFileNotes = []
+          for await (const [name, entry] of handle.entries()) {
+            if (entry instanceof File && !name.endsWith('.md')) continue
+            // 检查是否是文件句柄
+            if ('getFile' in entry && name.endsWith('.md')) {
+              try {
+                const file = await entry.getFile()
+                const text = await file.text()
+                const note = parseMarkdownFile(`${handle.name}/${name}`, text)
+                rawFileNotes.push(note)
+              } catch (noteError) {
+                console.warn(`Failed to load note ${name}, skipping:`, noteError)
+              }
+            }
           }
         }
-      }
-      setNotes(sortNotesDescending(rawFileNotes))
-      if (rawFileNotes[0]) {
-        setActiveNoteName(rawFileNotes[0].name)
+        setNotes(sortNotesDescending(rawFileNotes))
+        if (rawFileNotes[0]) {
+          setActiveNoteName(rawFileNotes[0].name)
+        }
+        setLoadError(null)
+      } catch (error) {
+        console.error('Failed to load notes:', error)
+        setLoadError(error instanceof Error ? error.message : '加载笔记失败')
+      } finally {
+        setIsLoading(false)
       }
     },
     [],
@@ -354,8 +365,9 @@ export function useNoteListManager(): UseNoteListManagerReturn {
     deleteNote,
     selectNote,
     renameNote,
+    getDirectoryAccessor,
     getDirectoryHandle,
-    loadNotesFromDirectoryHandle,
+    loadNotesFromDirectoryAccessor,
   }
 }
 

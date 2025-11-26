@@ -1,5 +1,6 @@
 import { createContext } from 'react'
 import type { NoteConfig } from './index'
+import type { DirectoryHandle } from '../directoryAccessor/types'
 
 /**
  * 笔记配置 Context 的类型定义
@@ -7,11 +8,11 @@ import type { NoteConfig } from './index'
  */
 export type NoteConfigContextShape = {
   noteConfig: NoteConfig | null
-  directoryHandle: FileSystemDirectoryHandle | null
-  loadConfig: (directoryHandle: FileSystemDirectoryHandle) => Promise<void>
+  directoryHandle: DirectoryHandle | null
+  loadConfig: (directoryHandle: DirectoryHandle) => Promise<void>
   updateNoteConfig: (
     updates: Partial<NoteConfig>,
-    directoryHandle: FileSystemDirectoryHandle,
+    directoryHandle: DirectoryHandle,
   ) => Promise<void>
 }
 

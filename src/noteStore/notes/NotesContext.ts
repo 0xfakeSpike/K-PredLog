@@ -1,5 +1,6 @@
 import { createContext } from 'react'
 import type { Note, NoteName } from '../note/types'
+import type { DirectoryHandle } from '../directoryAccessor/types'
 
 /**
  * 笔记管理 Context 的类型定义
@@ -29,12 +30,17 @@ export type NotesContextShape = {
   
   // 文件夹管理
   selectNotesFolder: () => Promise<void>
+  selectGitHubRepository: () => Promise<void>
   createNotebook: () => Promise<void>
   sourceFolderName: string | null
-  directoryHandle: FileSystemDirectoryHandle | null
+  directoryHandle: DirectoryHandle | null
   isLoading: boolean
   loadError: string | null
   setLoadError: (error: string | null) => void
+  
+  // K 线数据目录管理
+  selectKlineDataDirectory: () => Promise<void>
+  klineDataDirectoryName: string | null
 }
 
 export const NotesContext = createContext<NotesContextShape | undefined>(

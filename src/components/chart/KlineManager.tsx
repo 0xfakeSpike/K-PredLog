@@ -24,25 +24,22 @@ export function KlineManager() {
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
   const { notes, activeNote } = useNotesContext()
   const { noteConfig } = useNoteConfigContext()
-  const { candles, isLoading, lastUpdated } = useKlineDataWithPrediction(timeframe, activeNote)
   
-  if (!noteConfig) {
-    return null
-  }
-  
-  // 图表容器引用
+  // 图表容器引用（必须在条件返回之前声明）
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
   
-  // 使用提取的数据转换 Hook
+  const { candles, isLoading, lastUpdated } = useKlineDataWithPrediction(timeframe, activeNote)
+  
+  // 使用提取的数据转换 Hook（必须在条件返回之前调用）
   const { chartMarkers, predictionSegments, activeMarkerTime } = usePredictionData(
     notes,
     candles,
     activeNote,
   )
-
-  // 稳定化 onChartReady 回调，避免导致图表重新创建
+  
+  // 稳定化 onChartReady 回调，避免导致图表重新创建（必须在条件返回之前调用）
   const handleChartReady = useCallback((chart: IChartApi, series: ISeriesApi<'Candlestick'>) => {
     chartRef.current = chart
     seriesRef.current = series
@@ -54,7 +51,13 @@ export function KlineManager() {
     return `最近更新：${new Date(lastUpdated).toLocaleString('zh-CN')}`
   }, [isLoading, lastUpdated])
 
-  const currentSymbolLabel = noteConfig.symbol.toUpperCase()
+  const currentSymbolLabel = useMemo(() => {
+    return noteConfig?.symbol.toUpperCase() ?? ''
+  }, [noteConfig?.symbol])
+  
+  if (!noteConfig) {
+    return null
+  }
 
   return (
     <section className="kline-manager">

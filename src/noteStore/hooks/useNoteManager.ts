@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { Note, NoteName } from '../note/types'
 import { writeNote } from '../note/noteWrite'
+import type { DirectoryHandle } from '../directoryAccessor/types'
 
 export interface UseNoteManagerReturn {
   // 状态
@@ -25,7 +26,7 @@ export interface UseNoteManagerReturn {
 export function useNoteManager(
   notes: Note[],
   updateNote: (name: NoteName, patch: Partial<Note>) => void,
-  getDirectoryHandle: () => FileSystemDirectoryHandle | null,
+  getDirectoryHandle: () => DirectoryHandle | null,
   setIsLoading?: (loading: boolean) => void,
   setLoadError?: (error: string | null) => void,
 ): UseNoteManagerReturn {

@@ -9,17 +9,18 @@ import {
   saveNoteConfig,
   type NoteConfig,
 } from '../noteConfig'
+import type { DirectoryHandle } from '../directoryAccessor/types'
 
 export interface UseNoteConfigManagerReturn {
   // 状态
   noteConfig: NoteConfig | null
 
   // 操作
-  loadConfig: (directoryHandle: FileSystemDirectoryHandle) => Promise<void>
+  loadConfig: (directoryHandle: DirectoryHandle) => Promise<void>
   resetConfig: () => void
   updateNoteConfig: (
     updates: Partial<NoteConfig>,
-    directoryHandle: FileSystemDirectoryHandle,
+    directoryHandle: DirectoryHandle,
   ) => Promise<void>
 }
 
@@ -27,7 +28,7 @@ export function useNoteConfigManager(): UseNoteConfigManagerReturn {
   const [noteConfig, setNoteConfig] = useState<NoteConfig | null>(null)
 
   const loadConfig = useCallback(
-    async (directoryHandle: FileSystemDirectoryHandle) => {
+    async (directoryHandle: DirectoryHandle) => {
       try {
         const config = await loadNoteConfig(directoryHandle)
         setNoteConfig(config)
@@ -54,7 +55,7 @@ export function useNoteConfigManager(): UseNoteConfigManagerReturn {
   const updateNoteConfig = useCallback(
     async (
       updates: Partial<NoteConfig>,
-      directoryHandle: FileSystemDirectoryHandle,
+      directoryHandle: DirectoryHandle,
     ) => {
       if (!noteConfig) {
         throw new Error('请先选择笔记文件夹')

@@ -3,6 +3,8 @@
  * 配置状态由 NoteConfigProvider 维护，这里只提供类型定义和文件操作
  */
 
+import type { DirectoryHandle } from '../directoryAccessor/types'
+
 export interface NoteConfig {
   /**
    * 数据来源，例如 'binance', 'coinglass'
@@ -34,7 +36,7 @@ const DEFAULT_CONFIG: NoteConfig = {
  * 其他错误（解析失败、权限问题等）会抛出异常
  */
 export async function loadNoteConfig(
-  directoryHandle: FileSystemDirectoryHandle,
+  directoryHandle: DirectoryHandle,
 ): Promise<NoteConfig> {
   try {
     const fileHandle = await directoryHandle.getFileHandle(CONFIG_FILE_NAME)
@@ -78,11 +80,12 @@ export async function loadNoteConfig(
  */
 export async function saveNoteConfig(
   config: NoteConfig,
-  directoryHandle: FileSystemDirectoryHandle,
+  directoryHandle: DirectoryHandle,
 ): Promise<void> {
   const handle = await directoryHandle.getFileHandle(CONFIG_FILE_NAME, { create: true })
   const writable = await handle.createWritable()
-  await writable.write(JSON.stringify(config, null, 2))
-  await writable.close()
+  const writer = writable.getWriter()
+  await writer.write(new TextEncoder().encode(JSON.stringify(config, null, 2)))
+  await writer.close()
 }
 

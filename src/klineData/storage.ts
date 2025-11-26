@@ -5,6 +5,7 @@ import {
   mergeKlineDataToFile,
   clearKlineDataFile,
   setKlineDataDirectory as setKlineDataDir,
+  getKlineDataDirectoryName as getKlineDataDirName,
 } from './fileStorage'
 
 /**
@@ -14,6 +15,15 @@ import {
  */
 export function setKlineDataDirectory(handle: FileSystemDirectoryHandle | null): void {
   setKlineDataDir(handle)
+}
+
+/**
+ * 获取当前 K 线数据存储目录名称
+ * 
+ * @returns 目录名称，如果未设置则返回 null
+ */
+export function getKlineDataDirectoryName(): string | null {
+  return getKlineDataDirName()
 }
 
 /**

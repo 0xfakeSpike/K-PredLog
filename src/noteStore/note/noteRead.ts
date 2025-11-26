@@ -13,6 +13,7 @@ import { marked } from 'marked'
 import type { JSONContent } from '@tiptap/core'
 import type { Note } from './types'
 import { getTodayName, isValidDateString } from './dateUtils'
+import type { DirectoryHandle } from '../directoryAccessor/types'
 
 interface NoteJsonData {
   direction?: string
@@ -26,14 +27,15 @@ interface NoteJsonData {
  * 会同时读取 JSON 和 MD 文件
  */
 export async function loadNotesFromDirectory(
-  handle: FileSystemDirectoryHandle,
+  handle: DirectoryHandle,
 ): Promise<Note[]> {
   const notes: Note[] = []
   const processedNames = new Set<string>()
   
   // 遍历所有文件
   for await (const [name, entry] of handle.entries()) {
-    if (entry.kind !== 'file') continue
+    // 检查是否是文件（通过检查是否有 getFile 方法）
+    if (!('getFile' in entry)) continue
     
     // 处理 MD 文件
     if (name.endsWith('.md')) {
@@ -43,8 +45,7 @@ export async function loadNotesFromDirectory(
       
       try {
         // 读取 MD 文件
-        const mdFileHandle = entry as FileSystemFileHandle
-        const mdFile = await mdFileHandle.getFile()
+        const mdFile = await entry.getFile()
         const mdText = await mdFile.text()
         
         // 尝试读取对应的 JSON 文件

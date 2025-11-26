@@ -17,6 +17,15 @@ export function setKlineDataDirectory(handle: FileSystemDirectoryHandle | null):
 }
 
 /**
+ * 获取当前 K 线数据存储目录名称
+ * 
+ * @returns 目录名称，如果未设置则返回 null
+ */
+export function getKlineDataDirectoryName(): string | null {
+  return klineDataDirectoryHandle?.name ?? null
+}
+
+/**
  * 从时间戳获取年份
  */
 function getYearFromTimestamp(timestamp: number): number {

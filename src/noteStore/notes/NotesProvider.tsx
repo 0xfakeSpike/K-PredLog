@@ -1,8 +1,12 @@
-import { useMemo, type ReactNode } from 'react'
+import { useMemo, useState, useEffect, type ReactNode } from 'react'
 import type { NoteName } from '../note/types'
 import { NotesContext } from './NotesContext'
 import { useNoteListManager } from '../hooks/useNoteListManager'
 import { useNoteManager } from '../hooks/useNoteManager'
+import { LocalDirectoryAccessor } from '../directoryAccessor/LocalDirectoryAccessor'
+import { GitHubDirectoryAccessor, parseGitHubUrl } from '../directoryAccessor/GitHubDirectoryAccessor'
+import type { DirectoryAccessor } from '../directoryAccessor/types'
+import { setKlineDataDirectory, getKlineDataDirectoryName } from '../../klineData/storage'
 
 /**
  * NotesProvider 组件
@@ -16,6 +20,23 @@ import { useNoteManager } from '../hooks/useNoteManager'
 export function NotesProvider({ children }: { children: ReactNode }) {
   // 1. 笔记列表管理
   const listManager = useNoteListManager()
+  
+  // K 线数据目录状态
+  const [klineDataDirectoryName, setKlineDataDirectoryName] = useState<string | null>(
+    getKlineDataDirectoryName(),
+  )
+  
+  // 监听 K 线目录变化（通过自定义事件）
+  useEffect(() => {
+    const handleKlineDirectoryChange = () => {
+      setKlineDataDirectoryName(getKlineDataDirectoryName())
+    }
+    
+    window.addEventListener('klineDataDirectoryChanged', handleKlineDirectoryChange)
+    return () => {
+      window.removeEventListener('klineDataDirectoryChanged', handleKlineDirectoryChange)
+    }
+  }, [])
 
   // 2. 单个笔记管理（需要访问列表的 updateNote 和 notes）
   const noteManager = useNoteManager(
@@ -35,12 +56,12 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     listManager.selectNote(name)
   }
 
-  // 加载文件夹
-  const enhancedLoadNotes = async (handle: FileSystemDirectoryHandle) => {
-    await listManager.loadNotesFromDirectoryHandle(handle)
+  // 加载笔记（通过目录访问器）
+  const loadNotesFromAccessor = async (accessor: DirectoryAccessor) => {
+    await listManager.loadNotesFromDirectoryAccessor(accessor)
   }
 
-  // 选择笔记文件夹
+  // 选择本地笔记文件夹
   const selectNotesFolder = async () => {
     if (!window.showDirectoryPicker) {
       listManager.setLoadError(
@@ -51,10 +72,39 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     try {
       listManager.setLoadError(null)
       const handle = await window.showDirectoryPicker()
-      await enhancedLoadNotes(handle)
+      const accessor = new LocalDirectoryAccessor(handle)
+      await loadNotesFromAccessor(accessor)
     } catch (error) {
       if ((error as DOMException).name === 'AbortError') return
       listManager.setLoadError('读取文件夹失败，请确认权限后重试。')
+      console.error(error)
+    }
+  }
+
+  // 选择 GitHub 仓库
+  const selectGitHubRepository = async () => {
+    try {
+      listManager.setLoadError(null)
+      
+      // 提示用户输入 GitHub URL
+      const url = window.prompt('请输入 GitHub 仓库 URL：\n例如：https://github.com/owner/repo/tree/main/path')
+      if (!url || !url.trim()) {
+        return
+      }
+
+      // 解析 URL
+      const config = parseGitHubUrl(url.trim())
+      if (!config) {
+        listManager.setLoadError('GitHub URL 格式不正确，请使用格式：https://github.com/owner/repo/tree/branch/path')
+        return
+      }
+
+      const accessor = new GitHubDirectoryAccessor(config)
+      await loadNotesFromAccessor(accessor)
+    } catch (error) {
+      listManager.setLoadError(
+        error instanceof Error ? error.message : '加载 GitHub 仓库失败，请检查 URL 是否正确或仓库是否为公开仓库。',
+      )
       console.error(error)
     }
   }
@@ -81,7 +131,8 @@ export function NotesProvider({ children }: { children: ReactNode }) {
           create: true,
         },
       )
-      await enhancedLoadNotes(newFolderHandle)
+      const accessor = new LocalDirectoryAccessor(newFolderHandle)
+      await loadNotesFromAccessor(accessor)
     } catch (error) {
       if ((error as DOMException).name === 'AbortError') return
       listManager.setLoadError('创建笔记本失败，请确认权限后重试。')
@@ -111,6 +162,28 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     await listManager.renameNote(oldName, newName)
   }
 
+  // 选择 K 线数据目录
+  const selectKlineDataDirectory = async () => {
+    if (!window.showDirectoryPicker) {
+      listManager.setLoadError(
+        '当前浏览器暂不支持选择文件夹，请使用最新的 Chromium/Edge 浏览器。',
+      )
+      return
+    }
+    try {
+      listManager.setLoadError(null)
+      const handle = await window.showDirectoryPicker()
+      setKlineDataDirectory(handle)
+      setKlineDataDirectoryName(handle.name)
+      // 触发自定义事件通知其他组件
+      window.dispatchEvent(new CustomEvent('klineDataDirectoryChanged'))
+    } catch (error) {
+      if ((error as DOMException).name === 'AbortError') return
+      listManager.setLoadError('选择 K 线数据目录失败，请确认权限后重试。')
+      console.error(error)
+    }
+  }
+
   const value = useMemo(() => {
     const directoryHandle = listManager.getDirectoryHandle()
     return {
@@ -124,6 +197,7 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       updateNote: noteManager.updateNote,
       deleteNote,
       selectNotesFolder,
+      selectGitHubRepository,
       createNotebook,
       isLoading: listManager.isLoading,
       sourceFolderName: listManager.sourceFolderName,
@@ -132,6 +206,8 @@ export function NotesProvider({ children }: { children: ReactNode }) {
       setLoadError: listManager.setLoadError,
       saveNoteToFolder: noteManager.saveNoteToFolder,
       renameNote,
+      selectKlineDataDirectory,
+      klineDataDirectoryName,
     }
   }, [
     listManager,
@@ -140,8 +216,11 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     deleteNote,
     selectNote,
     selectNotesFolder,
+    selectGitHubRepository,
     createNotebook,
     renameNote,
+    selectKlineDataDirectory,
+    klineDataDirectoryName,
   ])
 
   return <NotesContext.Provider value={value}>{children}</NotesContext.Provider>
