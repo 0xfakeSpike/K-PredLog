@@ -10,7 +10,6 @@ import { writeNote } from '../note/noteWrite'
 import { getTodayName, isValidDateString } from '../note/dateUtils'
 import { extractAllTextFromContent } from '../note/contentUtils'
 import { DEFAULT_CONTENT } from '../note/noteDefaults'
-import { setKlineDataDirectory } from '../../klineData/storage'
 import type { DirectoryAccessor, DirectoryHandle } from '../directoryAccessor/types'
 
 export interface UseNoteListManagerReturn {
@@ -136,7 +135,6 @@ export function useNoteListManager(): UseNoteListManagerReturn {
           console.warn('Failed to load some notes, attempting to fix:', error)
           rawFileNotes = []
           for await (const [name, entry] of handle.entries()) {
-            if (entry instanceof File && !name.endsWith('.md')) continue
             // 检查是否是文件句柄
             if ('getFile' in entry && name.endsWith('.md')) {
               try {

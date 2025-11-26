@@ -55,22 +55,13 @@ export async function loadNoteConfig(
       return parsed
     } catch (parseError) {
       console.error('[loadNoteConfig] JSON parse error:', parseError)
-      console.error('[loadNoteConfig] File content that failed to parse:', text)
       throw new Error(`Failed to parse note_config.json: ${parseError instanceof Error ? parseError.message : String(parseError)}`)
     }
   } catch (error: any) {
-    // 文件不存在，返回默认配置
     if (error.name === 'NotFoundError') {
       return DEFAULT_CONFIG
     }
-    // 其他错误，详细记录并抛出
-    console.error('[loadNoteConfig] Error loading config:', {
-      error,
-      errorName: error?.name,
-      errorMessage: error?.message,
-      errorStack: error?.stack,
-      directoryName: directoryHandle.name,
-    })
+    console.error('[loadNoteConfig] Error loading config:', error)
     throw error
   }
 }

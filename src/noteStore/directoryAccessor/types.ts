@@ -49,8 +49,4 @@ export interface DirectoryAccessor {
   dispose?(): Promise<void>
 }
 
-/**
- * 目录访问器类型
- */
-export type DirectoryAccessorType = 'local' | 'github'
 

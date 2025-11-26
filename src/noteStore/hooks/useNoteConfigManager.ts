@@ -33,14 +33,7 @@ export function useNoteConfigManager(): UseNoteConfigManagerReturn {
         const config = await loadNoteConfig(directoryHandle)
         setNoteConfig(config)
       } catch (error) {
-        console.error('[useNoteConfigManager] Failed to load note config:', {
-          error,
-          errorName: error instanceof Error ? error.name : 'Unknown',
-          errorMessage: error instanceof Error ? error.message : String(error),
-          errorStack: error instanceof Error ? error.stack : undefined,
-          directoryName: directoryHandle.name,
-        })
-        // 出错时不设置配置，保持为 null，让问题暴露
+        console.error('[useNoteConfigManager] Failed to load note config:', error)
         setNoteConfig(null)
         throw error
       }

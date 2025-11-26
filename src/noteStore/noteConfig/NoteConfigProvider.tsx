@@ -17,14 +17,7 @@ export function NoteConfigProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (directoryHandle) {
       loadConfig(directoryHandle).catch((error) => {
-        console.error('[NoteConfigProvider] Failed to load note config:', {
-          error,
-          errorName: error instanceof Error ? error.name : 'Unknown',
-          errorMessage: error instanceof Error ? error.message : String(error),
-          errorStack: error instanceof Error ? error.stack : undefined,
-          directoryName: directoryHandle.name,
-        })
-        // 不捕获错误，让错误暴露出来
+        console.error('[NoteConfigProvider] Failed to load note config:', error)
       })
     } else {
       // 当 directoryHandle 为 null 时，重置配置
