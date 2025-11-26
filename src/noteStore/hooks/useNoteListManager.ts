@@ -45,7 +45,9 @@ function createNoteEntity({ content }: { content: typeof DEFAULT_CONTENT }): Not
   return {
     name: todayName,
     direction: 'neutral',
+    score: 0,
     interval: 1 * 24 * 60 * 60, // 默认 1 天（秒数）
+    reason: '',
     content,
   }
 }
@@ -168,21 +170,36 @@ export function useNoteListManager(): UseNoteListManagerReturn {
       })
 
       // 直接使用 note.name 作为文件名（已经是 YYYY-MM-DD 格式）
-      const filename = `${newNote.name}.md`
+      const mdFilename = `${newNote.name}.md`
+      const jsonFilename = `${newNote.name}.json`
 
-      // 检查文件是否已存在
+      // 检查文件是否已存在（检查 MD 或 JSON 文件）
+      let fileExists = false
       try {
-        await directoryHandle.getFileHandle(filename)
+        await directoryHandle.getFileHandle(mdFilename)
+        fileExists = true
+      } catch (error: any) {
+        if (error.name !== 'NotFoundError') {
+          throw error
+        }
+      }
+      
+      if (!fileExists) {
+        try {
+          await directoryHandle.getFileHandle(jsonFilename)
+          fileExists = true
+        } catch (error: any) {
+          if (error.name !== 'NotFoundError') {
+            throw error
+          }
+        }
+      }
+
+      if (fileExists) {
         // 文件已存在，提示用户
         setLoadError(`对应日期（${newNote.name}）的笔记已经存在。`)
         setIsLoading(false)
         return
-      } catch (error: any) {
-        // 文件不存在，继续创建
-        if (error.name !== 'NotFoundError') {
-          // 其他错误，抛出
-          throw error
-        }
       }
 
       // 创建新文件
@@ -256,22 +273,43 @@ export function useNoteListManager(): UseNoteListManagerReturn {
           name: newName,
         }
 
-        // 写入新文件
+        // 写入新文件（会同时创建 JSON 和 MD 文件）
         await writeNote(renamedNote, directoryHandle)
 
-        // 删除旧文件
-        const oldFilename = `${oldName}.md`
+        // 删除旧文件（JSON 和 MD）
+        const oldMdFilename = `${oldName}.md`
+        const oldJsonFilename = `${oldName}.json`
+        const errors: string[] = []
+        
+        // 删除旧的 MD 文件
         try {
-          await directoryHandle.removeEntry(oldFilename)
+          await directoryHandle.removeEntry(oldMdFilename)
         } catch (error: any) {
-          // 如果删除失败，尝试回滚（删除新文件）
+          if (error.name !== 'NotFoundError') {
+            errors.push(`删除旧 MD 文件失败: ${error.message}`)
+          }
+        }
+        
+        // 删除旧的 JSON 文件
+        try {
+          await directoryHandle.removeEntry(oldJsonFilename)
+        } catch (error: any) {
+          if (error.name !== 'NotFoundError') {
+            errors.push(`删除旧 JSON 文件失败: ${error.message}`)
+          }
+        }
+        
+        // 如果删除失败，尝试回滚（删除新文件）
+        if (errors.length > 0) {
           try {
-            const newFilename = `${newName}.md`
-            await directoryHandle.removeEntry(newFilename)
+            const newMdFilename = `${newName}.md`
+            const newJsonFilename = `${newName}.json`
+            await directoryHandle.removeEntry(newMdFilename).catch(() => {})
+            await directoryHandle.removeEntry(newJsonFilename).catch(() => {})
           } catch (rollbackError) {
             console.error('Failed to rollback after rename:', rollbackError)
           }
-          throw new Error('删除旧文件失败，请检查权限后重试')
+          throw new Error(`删除旧文件失败: ${errors.join('; ')}`)
         }
 
         // 更新笔记列表

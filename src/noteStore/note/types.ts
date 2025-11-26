@@ -12,7 +12,9 @@ export type NoteName = string
 export interface Note {
   name: NoteName // YYYY-MM-DD 格式的日期（如：2025-11-23）
   direction: string
+  score: number
   interval: number // 预测周期（秒数）
+  reason: string
   content: JSONContent
 }
 
