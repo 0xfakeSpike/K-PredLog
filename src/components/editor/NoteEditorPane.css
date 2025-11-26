@@ -149,12 +149,17 @@
 }
 
 .editor-pane__control select,
-.editor-pane__control input[type="date"] {
+.editor-pane__control input[type="date"],
+.editor-pane__control input[type="number"] {
   border-radius: 8px;
   border: 1px solid rgba(15, 23, 42, 0.2);
   padding: 6px 10px;
   font-size: 14px;
   min-width: 140px;
+}
+
+.editor-pane__control input[type="number"] {
+  min-width: 100px;
 }
 
 .editor-pane__date {

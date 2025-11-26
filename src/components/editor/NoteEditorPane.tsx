@@ -92,11 +92,29 @@ export function NoteEditorPane() {
                   ))}
                 </select>
               </label>
+
+              <label className="editor-pane__control">
+                <span>评分</span>
+                <input
+                  type="number"
+                  min="0"
+                  max="10"
+                  step="1"
+                  value={activeNote.score ?? 0}
+                  onChange={(event) =>
+                    updateNote(activeNote.name, {
+                      score: event.target.value ? Number(event.target.value) : 0,
+                    })
+                  }
+                />
+              </label>
             </div>
             <p className="editor-pane__judgement-preview">
               当前方向：<strong>{activeNote.direction || '未设置'}</strong>
               {' · '}
               周期：<strong>{activeNote.interval ? `${Math.round(activeNote.interval / (24 * 60 * 60))}天` : '未设置'}</strong>
+              {' · '}
+              评分：<strong>{activeNote.score ?? 0}</strong>
             </p>
           </div>
         </div>
