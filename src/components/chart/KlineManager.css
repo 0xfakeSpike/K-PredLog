@@ -59,14 +59,21 @@
   color: #fff;
 }
 
-.kline-manager__collapse {
+.kline-manager__toggle {
   border: 1px solid rgba(15, 23, 42, 0.12);
   background: transparent;
   border-radius: 999px;
   padding: 6px 14px;
   font-size: 13px;
   color: #475569;
-  cursor: not-allowed;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.kline-manager__toggle.is-active {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
 }
 
 .kline-manager__body {

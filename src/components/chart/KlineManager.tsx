@@ -23,6 +23,7 @@ import './KlineManager.css'
  */
 export function KlineManager() {
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
+  const [showSegments, setShowSegments] = useState(true)
   const { notes, activeNote } = useNotesContext()
   const { noteConfig, updateNoteConfig } = useKlineConfig()
   
@@ -80,8 +81,11 @@ export function KlineManager() {
               </button>
             ))}
           </div>
-          <button className="kline-manager__collapse" disabled>
-            收起
+          <button
+            className={classNames('kline-manager__toggle', { 'is-active': showSegments })}
+            onClick={() => setShowSegments((prev) => !prev)}
+          >
+            {showSegments ? '隐藏预测线段' : '显示预测线段'}
           </button>
         </div>
       </header>
@@ -101,7 +105,7 @@ export function KlineManager() {
             markers={chartMarkers}
           />
         )}
-        {chartRef.current && (
+        {chartRef.current && showSegments && (
           <SegmentOverlay
             chart={chartRef.current}
             predictionSegments={predictionSegments}
