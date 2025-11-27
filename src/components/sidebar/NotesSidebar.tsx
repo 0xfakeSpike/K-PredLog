@@ -56,7 +56,10 @@ export function NotesSidebar() {
     let cancelled = false
     const loadRecommended = async () => {
       try {
-        const response = await fetch('recommended_notebooks.json', { cache: 'no-store' })
+        const response = await fetch(
+          'https://raw.githubusercontent.com/0xfakeSpike/trader-quotes/main/recommended_notebooks.json',
+          { cache: 'no-store' },
+        )
         if (!response.ok) {
           throw new Error(`Failed to load recommended notebooks: ${response.status}`)
         }
