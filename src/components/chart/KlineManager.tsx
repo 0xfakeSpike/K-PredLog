@@ -26,8 +26,6 @@ export function KlineManager() {
   const [showSegments, setShowSegments] = useState(true)
   const { notes, activeNote } = useNotesContext()
   const { noteConfig, updateNoteConfig } = useKlineConfig()
-  
-  // 图表容器引用（必须在条件返回之前声明）
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
@@ -37,15 +35,11 @@ export function KlineManager() {
     activeNote,
     noteConfig,
   )
-  
-  // 使用提取的数据转换 Hook（必须在条件返回之前调用）
   const { chartMarkers, predictionSegments, activeMarkerTime } = usePredictionData(
     notes,
     candles,
     activeNote,
   )
-  
-  // 稳定化 onChartReady 回调，避免导致图表重新创建（必须在条件返回之前调用）
   const handleChartReady = useCallback((chart: IChartApi, series: ISeriesApi<'Candlestick'>) => {
     chartRef.current = chart
     seriesRef.current = series
