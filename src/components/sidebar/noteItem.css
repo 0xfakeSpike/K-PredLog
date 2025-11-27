@@ -1,42 +1,39 @@
 .sidebar__note {
   width: 100%;
-  border-radius: 12px;
-  padding: 12px;
-  display: block;
+  padding: 6px 0;
+  border-radius: 8px;
+  transition: background 0.2s;
 }
 
 .sidebar__note.is-active {
-  background: rgba(15, 23, 42, 0.05);
+  background: rgba(55, 53, 47, 0.08);
 }
 
 .sidebar__note-content {
   width: 100%;
-  display: block;
-  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .sidebar__note-body {
   width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   text-align: left;
   border: none;
   background: transparent;
   cursor: pointer;
-  display: block;
   padding: 0;
-}
-
-.sidebar__note-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  color: inherit;
 }
 
 .sidebar__note-filename {
-  font-size: 14px;
-  color: #94a3b8;
-  font-family: monospace;
-  flex: 1;
+  font-size: 13px;
+  color: var(--notion-muted);
+  flex: 0 0 auto;
+  min-width: 90px;
 }
 
 .sidebar__note-edit-btn {
@@ -45,58 +42,53 @@
   cursor: pointer;
   padding: 2px 4px;
   font-size: 12px;
-  opacity: 0.6;
+  opacity: 0;
   transition: opacity 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+
+.sidebar__note:hover .sidebar__note-edit-btn {
+  opacity: 0.6;
 }
 
 .sidebar__note-edit-btn:hover {
   opacity: 1;
 }
 
-.sidebar__note-edit-btn:active {
-  opacity: 0.8;
-}
-
 .sidebar__note-rename-wrapper {
   width: 100%;
-  margin-bottom: 8px;
 }
 
 .sidebar__note-filename-input {
   width: 100%;
-  border: 1px solid #1f4cd7;
+  border: 1px solid var(--notion-border);
   border-radius: 6px;
   padding: 4px 8px;
-  font-size: 11px;
-  font-family: monospace;
-  background: #fff;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  background: white;
 }
 
 .sidebar__note-filename-input:focus {
   outline: none;
-  border-color: #1f4cd7;
-  box-shadow: 0 0 0 2px rgba(31, 76, 215, 0.1);
+  border-color: var(--notion-strong);
 }
 
 .sidebar__note-rename-error {
   font-size: 10px;
-  color: #ef4444;
+  color: #e5484d;
   margin-top: 4px;
-  padding: 2px 4px;
-  background: #fee2e2;
-  border-radius: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .sidebar__note-title {
-  font-weight: 600;
-  display: block;
-  color: #0f172a;
-  margin-top: 4px;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--notion-strong);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 

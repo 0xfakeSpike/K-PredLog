@@ -1,6 +1,7 @@
 import { createContext } from 'react'
 import type { Note, NoteName } from '../note/types'
 import type { DirectoryHandle } from '../directoryAccessor/types'
+import type { NotebookInfo } from '../hooks/useNotebookListManager'
 
 /**
  * 笔记管理 Context 的类型定义
@@ -24,10 +25,18 @@ export type NotesContextShape = {
   searchTerm: string
   setSearchTerm: (term: string) => void
   
-  // 文件夹管理
+  // 笔记本管理
+  notebooks: NotebookInfo[]
+  activeNotebookName: string | null
+  selectNotebook: (notebookName: string) => Promise<void>
+  selectRootDirectory: () => Promise<void>
+  createNotebook: () => Promise<void>
+  refreshNotebooks: () => Promise<void>
+  loadGitHubNotebook: (url: string) => Promise<void>
+  
+  // 文件夹管理（向后兼容，保留但可能不再使用）
   selectNotesFolder: () => Promise<void>
   selectGitHubRepository: () => Promise<void>
-  createNotebook: () => Promise<void>
   sourceFolderName: string | null
   directoryHandle: DirectoryHandle | null
   isLoading: boolean

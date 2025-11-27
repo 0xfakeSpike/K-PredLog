@@ -88,21 +88,18 @@ export function NoteItem({ note, isActive, onSelect, onRename }: NoteItemProps) 
           </div>
         ) : (
           <div className="sidebar__note-content">
-            <div className="sidebar__note-header">
+            <button className="sidebar__note-body" onClick={onSelect}>
               <span className="sidebar__note-filename">{filenameValue}</span>
-              <button
-                className="sidebar__note-edit-btn"
-                onClick={handleEditClick}
-                title="修改日期"
-              >
-                ✏️
-              </button>
-            </div>
+              <span className="sidebar__note-title">
+                {extractTitleFromContent(note.content)}
+              </span>
+            </button>
             <button
-              className="sidebar__note-body"
-              onClick={onSelect}
+              className="sidebar__note-edit-btn"
+              onClick={handleEditClick}
+              title="修改日期"
             >
-              <span className="sidebar__note-title">{extractTitleFromContent(note.content)}</span>
+              ✏️
             </button>
           </div>
         )}

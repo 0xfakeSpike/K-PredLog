@@ -1,12 +1,28 @@
+:root {
+  --notion-bg: #f7f6f3;
+  --notion-panel: #fcfbf9;
+  --notion-border: rgba(55, 53, 47, 0.14);
+  --notion-muted: rgba(55, 53, 47, 0.6);
+  --notion-strong: #1f1e1b;
+  --notion-accent: #2f3437;
+  --notion-highlight: rgba(55, 53, 47, 0.08);
+  font-family: 'Inter', 'PingFang SC', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--notion-strong);
+  background: var(--notion-bg);
+}
+
+body,
 #root {
   height: 100vh;
   width: 100vw;
+  background: var(--notion-bg);
+  margin: 0;
 }
 
 .app-shell {
   height: 100%;
   width: 100%;
   display: flex;
-  background: #edf2f7;
-  color: #0f172a;
+  background: var(--notion-bg);
+  color: var(--notion-strong);
 }

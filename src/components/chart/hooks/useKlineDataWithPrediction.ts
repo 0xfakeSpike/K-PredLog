@@ -14,8 +14,11 @@ import { useMemo } from 'react'
 import type { Timeframe } from '../../../klineData/types'
 import type { Note } from '../../../noteStore/note/types'
 import { useKlineData } from './useKlineData'
-import { calculateTimeRangeFromNote } from '../prediction/calculateTimeRange'
-import { useNoteConfigContext } from '../../../noteStore/hooks/useNoteConfigContext'
+import {
+  calculateDefaultTimeRange,
+  calculateTimeRangeFromNote,
+} from '../prediction/calculateTimeRange'
+import type { NoteConfig } from './useKlineConfig'
 
 /**
  * 根据笔记和预测信息获取K线数据
@@ -25,15 +28,16 @@ import { useNoteConfigContext } from '../../../noteStore/hooks/useNoteConfigCont
  */
 export function useKlineDataWithPrediction(
   timeframe: Timeframe,
-  activeNote?: Note | null,
+  activeNote: Note | null | undefined,
+  noteConfig: NoteConfig,
 ) {
-  const { noteConfig } = useNoteConfigContext()
-  
   // 使用 useMemo 稳定 timeRange 对象引用
   // 只有当笔记的关键属性（name、interval）或 timeframe 变化时，才重新计算
   // 这样可以避免因为 activeNote 对象引用变化（但内容相同）导致 useKlineData 重新执行
   const timeRange = useMemo(() => {
-    if (!activeNote) return null
+    if (!activeNote) {
+      return calculateDefaultTimeRange(timeframe)
+    }
     return calculateTimeRangeFromNote(activeNote, timeframe)
   }, [activeNote?.name, activeNote?.interval, timeframe])
 

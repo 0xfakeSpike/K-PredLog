@@ -3,7 +3,7 @@ import type { CandlestickData, Time } from 'lightweight-charts'
 import { type Timeframe } from '../../../klineData/types'
 import { klineManager } from '../../../klineData/klineManager'
 import { buildDataSourceId } from '../../../klineData/dataSource'
-import type { NoteConfig } from '../../../noteStore/noteConfig'
+import type { NoteConfig } from './useKlineConfig'
 
 type KlineState = {
   candles: CandlestickData<Time>[]
@@ -30,7 +30,7 @@ const INITIAL_STATE: KlineState = {
 export function useKlineData(
   timeframe: Timeframe,
   timeRange: { startTime: number; endTime: number } | null,
-  noteConfig: NoteConfig | null,
+  noteConfig: NoteConfig,
 ) {
   const [state, setState] = useState<KlineState>(INITIAL_STATE)
 
@@ -39,7 +39,7 @@ export function useKlineData(
     setState((prev) => ({ ...prev, isLoading: true }))
 
     const loadData = async () => {
-      if (!timeRange || !noteConfig) {
+      if (!timeRange) {
         setState({
           candles: [],
           isLoading: false,
@@ -75,11 +75,9 @@ export function useKlineData(
     timeframe,
     timeRange?.startTime,
     timeRange?.endTime,
-    // 使用 noteConfig 对象本身，而不是它的属性，确保从 null 变为对象时能触发更新
     noteConfig,
-    // 同时保留 source 和 symbol 作为依赖，确保配置值变化时也能触发更新
-    noteConfig?.source,
-    noteConfig?.symbol,
+    noteConfig.source,
+    noteConfig.symbol,
   ])
 
   return state

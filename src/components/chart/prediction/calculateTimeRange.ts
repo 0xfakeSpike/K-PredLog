@@ -5,7 +5,7 @@
  */
 
 import type { Timeframe } from '../../../klineData/types'
-import { TIMEFRAME_BEFORE_DAYS } from '../../../klineData/types'
+import { TIMEFRAME_BEFORE_DAYS, TIMEFRAME_DEFAULT_DAYS } from '../../../klineData/types'
 import type { Note } from '../../../noteStore/note/types'
 
 /**
@@ -35,5 +35,21 @@ export function calculateTimeRangeFromNote(
   const endTime = noteTime + actualIntervalSeconds + bufferSeconds
 
   return { startTime, endTime }
+}
+
+/**
+ * 当没有选中笔记时的默认时间范围
+ * 以当前时间为终点，向前取不同时间周期对应的默认天数
+ */
+export function calculateDefaultTimeRange(
+  timeframe: Timeframe,
+): { startTime: number; endTime: number } {
+  const nowSeconds = Math.floor(Date.now() / 1000)
+  const defaultDays = TIMEFRAME_DEFAULT_DAYS[timeframe]
+  const windowSeconds = defaultDays * 24 * 60 * 60
+  return {
+    startTime: nowSeconds - windowSeconds,
+    endTime: nowSeconds,
+  }
 }
 

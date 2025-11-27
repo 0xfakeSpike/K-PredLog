@@ -4,11 +4,12 @@ import classNames from 'classnames'
 import { useKlineDataWithPrediction } from './hooks/useKlineDataWithPrediction'
 import { TIMEFRAME_OPTIONS, type Timeframe } from '../../klineData/types'
 import { useNotesContext } from '../../noteStore/hooks/useNotesContext'
-import { useNoteConfigContext } from '../../noteStore/hooks/useNoteConfigContext'
+import { useKlineConfig } from './hooks/useKlineConfig'
 import { SegmentOverlay } from './prediction/segment/SegmentOverlay'
 import { MarkerOverlay } from './prediction/marker/MarkerOverlay'
 import { usePredictionData } from './hooks/usePredictionData'
 import { KlineChart } from './kline/KlineChart'
+import { ConfigPanel } from './ConfigPanel'
 import './KlineManager.css'
 
 /**
@@ -23,14 +24,18 @@ import './KlineManager.css'
 export function KlineManager() {
   const [timeframe, setTimeframe] = useState<Timeframe>('1D')
   const { notes, activeNote } = useNotesContext()
-  const { noteConfig } = useNoteConfigContext()
+  const { noteConfig, updateNoteConfig } = useKlineConfig()
   
   // 图表容器引用（必须在条件返回之前声明）
   const containerRef = useRef<HTMLDivElement | null>(null)
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
   
-  const { candles, isLoading, lastUpdated } = useKlineDataWithPrediction(timeframe, activeNote)
+  const { candles, isLoading, lastUpdated } = useKlineDataWithPrediction(
+    timeframe,
+    activeNote,
+    noteConfig,
+  )
   
   // 使用提取的数据转换 Hook（必须在条件返回之前调用）
   const { chartMarkers, predictionSegments, activeMarkerTime } = usePredictionData(
@@ -52,12 +57,8 @@ export function KlineManager() {
   }, [isLoading, lastUpdated])
 
   const currentSymbolLabel = useMemo(() => {
-    return noteConfig?.symbol.toUpperCase() ?? ''
-  }, [noteConfig?.symbol])
-  
-  if (!noteConfig) {
-    return null
-  }
+    return noteConfig.symbol.toUpperCase()
+  }, [noteConfig.symbol])
 
   return (
     <section className="kline-manager">
@@ -66,6 +67,7 @@ export function KlineManager() {
           <p className="kline-manager__symbol">{currentSymbolLabel} / USDT</p>
           <p className="kline-manager__status">{statusText}</p>
         </div>
+        <ConfigPanel noteConfig={noteConfig} onUpdate={updateNoteConfig} />
         <div className="kline-manager__actions">
           <div className="kline-manager__timeframes">
             {TIMEFRAME_OPTIONS.map((option) => (

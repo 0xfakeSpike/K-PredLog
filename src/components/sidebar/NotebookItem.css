@@ -1,0 +1,124 @@
+.sidebar__notebook {
+  transition: background 0.2s ease;
+}
+
+.sidebar__notebook-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.sidebar__notebook-header:hover,
+.sidebar__notebook.is-active .sidebar__notebook-header {
+  background: rgba(55, 53, 47, 0.06);
+}
+
+.sidebar__notebook-toggle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 5px;
+}
+
+.sidebar__notebook-icon {
+  width: 20px;
+  text-align: center;
+  font-size: 16px;
+}
+
+.sidebar__notebook-info {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sidebar__notebook-name {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar__notebook-config {
+  font-size: 12px;
+  color: var(--notion-muted);
+  white-space: nowrap;
+}
+
+.sidebar__notebook-chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  font-size: 10px;
+  color: var(--notion-muted);
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sidebar__notebook-chevron.is-open {
+  transform: rotate(90deg);
+}
+
+.sidebar__notebook-add {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--notion-muted);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sidebar__notebook-add:hover:not(:disabled) {
+  background: rgba(55, 53, 47, 0.12);
+  color: var(--notion-strong);
+}
+
+.sidebar__notebook-add:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sidebar__notebook-notes {
+  margin-top: 4px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(55, 53, 47, 0.12);
+  margin-left: 4px;
+}
+
+.sidebar__notebook-notes ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar__notebook-notes--github {
+  border-color: rgba(31, 76, 215, 0.15);
+}
+
+.sidebar__notebook-empty {
+  padding: 8px 0;
+  font-size: 12px;
+  color: var(--notion-muted);
+  font-style: italic;
+}
+

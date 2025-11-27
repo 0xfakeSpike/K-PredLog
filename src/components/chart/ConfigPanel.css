@@ -1,0 +1,65 @@
+.config-panel {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+.config-panel__header {
+  display: flex;
+  align-items: center;
+  margin: 0;
+}
+
+.config-panel__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.config-panel__fields {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.config-panel__field {
+  display: flex;
+  align-items: center;
+}
+
+.config-panel__field label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.config-panel__field span {
+  color: #475569;
+  font-weight: 500;
+}
+
+.config-panel__field select {
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.config-panel__field select:focus {
+  outline: none;
+  border-color: #1f4cd7;
+  box-shadow: 0 0 0 2px rgba(31, 76, 215, 0.1);
+}
+

@@ -1,26 +1,35 @@
 .editor-pane {
   flex: 1;
-  padding: 32px 48px;
+  background: var(--notion-bg);
+  overflow-y: auto;
+  padding: 48px 0;
+}
+
+.editor-pane__surface {
+  width: 100%;
+  max-width: none;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 24px;
-  overflow: auto;
-  background: #fff;
+  padding: 0 48px;
+  box-sizing: border-box;
 }
 
-.editor-pane--empty {
+.editor-pane__surface--center {
   align-items: center;
   justify-content: center;
+  min-height: 60vh;
 }
 
-.empty-state {
+.editor-pane--empty .empty-state {
   text-align: center;
-  color: #94a3b8;
+  color: var(--notion-muted);
 }
 
 .editor-pane__header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 24px;
   align-items: flex-start;
 }
@@ -31,107 +40,86 @@
   align-items: center;
 }
 
-.editor-pane__save {
-  border: none;
-  background: #2563eb;
-  color: white;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  min-width: 120px;
-}
-
-.editor-pane__save:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.editor-pane__title {
-  font-size: 28px;
-  font-weight: 600;
-  border: none;
-  padding: 0;
-  margin-bottom: 12px;
-  width: 100%;
-  outline: none;
-}
-
-.editor-pane__meta {
-  color: #94a3b8;
-  margin: 0;
+.editor-pane__primary-btn,
+.editor-pane__ghost-btn {
+  border-radius: 12px;
+  padding: 8px 18px;
   font-size: 14px;
-}
-
-.editor-pane__delete {
-  border: none;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
-  padding: 8px 14px;
-  border-radius: 8px;
+  border: 1px solid transparent;
   cursor: pointer;
-  min-width: 96px;
 }
 
-.editor-pane__delete:disabled {
+.editor-pane__primary-btn {
+  background: var(--notion-strong);
+  color: white;
+  border-color: var(--notion-strong);
+}
+
+.editor-pane__primary-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.editor-pane__body {
+.editor-pane__ghost-btn {
+  background: transparent;
+  border-color: var(--notion-border);
+  color: var(--notion-muted);
+}
+
+.editor-pane__stack {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+}
+
+.editor-pane__content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.editor-pane__content-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--notion-strong);
+}
+
+.editor-pane__data-card,
+.editor-pane__meta-card,
+.editor-pane__content-card,
+.editor-pane__empty-card {
+  background: white;
+  border: 1px solid var(--notion-border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(15, 15, 15, 0.03);
+}
+
+.editor-pane__data-card {
+  border-style: solid;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .editor-pane__meta-card {
-  border: 1px dashed rgba(15, 23, 42, 0.2);
-  border-radius: 16px;
-  padding: 16px 20px;
-  background: #f9fafb;
+  border-style: dashed;
 }
 
-.editor-pane__meta-card h4 {
-  margin: 0 0 8px;
-  font-size: 14px;
-  color: #475569;
-}
-
-.editor-pane__meta-card p {
-  margin: 0;
-  color: #0f172a;
-}
-
-.editor-pane__meta-card .editor-pane__meta-source {
-  font-size: 12px;
-  color: #94a3b8;
-  margin-top: 8px;
-}
-
-.editor-pane__badge {
-  display: inline-flex;
+.editor-pane__empty-card {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #1f4cd7;
-  background: rgba(31, 76, 215, 0.1);
-  border-radius: 999px;
-  padding: 4px 12px;
-  margin-top: 8px;
-}
-
-.editor-pane__meta-label {
-  display: block;
-  font-size: 12px;
-  color: #94a3b8;
-  text-transform: uppercase;
+  justify-content: center;
+  min-height: 320px;
 }
 
 .editor-pane__judgement {
-  margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .editor-pane__judgement-values {
@@ -145,34 +133,25 @@
   flex-direction: column;
   gap: 4px;
   font-size: 13px;
-  color: #475569;
+  color: var(--notion-muted);
 }
 
 .editor-pane__control select,
-.editor-pane__control input[type="date"],
 .editor-pane__control input[type="number"] {
   border-radius: 8px;
-  border: 1px solid rgba(15, 23, 42, 0.2);
+  border: 1px solid var(--notion-border);
   padding: 6px 10px;
   font-size: 14px;
-  min-width: 140px;
-}
-
-.editor-pane__control input[type="number"] {
-  min-width: 100px;
-}
-
-.editor-pane__date {
-  margin-top: 12px;
+  background: var(--notion-panel);
 }
 
 .editor-pane__judgement-preview {
-  margin: 8px 0 0;
+  margin: 0;
   font-size: 14px;
-  color: #0f172a;
+  color: var(--notion-strong);
 }
 
-.editor-pane__judgement-preview strong {
-  font-weight: 600;
+.editor-pane__content-card .ProseMirror {
+  min-height: 320px;
 }
 
